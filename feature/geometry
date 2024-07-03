@@ -254,6 +254,91 @@ class Rectangle extends Shape {
     }
 }
 
+// Класс Square
+class Square extends Shape {
+    private Point topLeft;
+    private Point bottomRight;
+
+    Square(Point topLeft, Point bottomRight) {
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
+    }
+
+    // Метод получения стороны квадрата
+    double getSideLength() {
+        return bottomRight.x - topLeft.x;
+    }
+
+    // Метод получения вписанной окружности
+    double getInscribedCircleRadius() {
+        return getSideLength() / 2;
+    }
+
+    // Метод получения описанной окружности
+    double getCircumscribedCircleRadius() {
+        return Math.sqrt(2) * getSideLength() / 2;
+    }
+
+    @Override
+    Point getCenter() {
+        double centerX = (topLeft.x + bottomRight.x) / 2;
+        double centerY = (topLeft.y + bottomRight.y) / 2;
+        return new Point(centerX, centerY);
+    }
+
+    @Override
+    double getPerimeter() {
+        return 4 * getSideLength();
+    }
+
+    @Override
+    double getArea() {
+         return Math.pow(getSideLength(), 2);
+    }
+
+    @Override
+    void move(Point newCenter) {
+        double centerX = (topLeft.x + bottomRight.x) / 2;
+        double centerY = (topLeft.y + bottomRight.y) / 2;
+        double dx = newCenter.x - centerX;
+        double dy = newCenter.y - centerY;
+
+        topLeft.x += dx;
+        topLeft.y += dy;
+        bottomRight.x += dx;
+        bottomRight.y += dy;
+    }
+
+    @Override
+    void rotate(double angle) {
+    // Поворот квадрата вокруг его центра
+        Point center = getCenter();
+        topLeft = rotatePoint(topLeft, center, angle);
+        bottomRight = rotatePoint(bottomRight, center, angle);
+    }
+
+    private Point rotatePoint(Point p, Point center, double angle) {
+        double rad = Math.toRadians(angle);
+        double cosTheta = Math.cos(rad);
+        double sinTheta = Math.sin(rad);
+        double x = cosTheta * (p.x - center.x) - sinTheta * (p.y - center.y) + center.x;
+        double y = sinTheta * (p.x - center.x) + cosTheta * (p.y - center.y) + center.y;
+        return new Point(x, y);
+    }
+
+
+    @Override
+    void scale(double factor) {
+        Point center = getCenter();
+        double halfSide = getSideLength() / 2;
+        double newHalfSide = halfSide * factor;
+        topLeft.x = center.x - newHalfSide;
+        topLeft.y = center.y - newHalfSide;
+        bottomRight.x = center.x + newHalfSide;
+        bottomRight.y = center.y + newHalfSide;
+    }
+
+}
 public class Main {
     public static void main(String[] args) {
        // Эллипс
@@ -297,5 +382,25 @@ public class Main {
         System.out.println("Высота прямоугольника: " + rectHeight);
         double diagonal = rectangle.getDiagonal();
         System.out.println("Диагональ прямоугольника: " + diagonal);;
+    
+        // Квадрат
+        Point topLeft = new Point(0, 4);
+        Point bottomRight = new Point(4, 0);
+        Square square = new Square(topLeft, bottomRight);
+        System.out.println("Сторона квадрата: " + square.getSideLength());
+        System.out.println("Радиус вписанной окружности: " + square.getInscribedCircleRadius());
+        System.out.println("Радиус описанной окружности: " + square.getCircumscribedCircleRadius());
+        System.out.println("Точка центра квадрата: (" + square.getCenter().x + ", " + square.getCenter().y + ")");
+        System.out.println("Периметр квадрата: " + square.getPerimeter());
+        System.out.println("Площадь квадрата: " + square.getArea());
+        // Перемещение квадрата
+        square.move(new Point(1, 0));
+        System.out.println("Новая точка центра квадрата после перемещения: (" + square.getCenter().x + ", " + square.getCenter().y + ")");
+        // Масштабирование квадрата
+        square.scale(2);
+        System.out.println("Новая сторона квадрата после масштабирования x2: " + square.getSideLength());
+        System.out.println("Новый периметр квадрата после масштабирования x2: " + square.getPerimeter());
+        System.out.println("Новая площадь квадрата после масштабирования x2: " + square.getArea());
+    
     }
 }
