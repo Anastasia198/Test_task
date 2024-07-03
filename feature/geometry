@@ -1,0 +1,135 @@
+// Определяем абстрактный класс для всех фигур на плоскости
+abstract class Shape {
+    // Получение точки центра фигуры
+    abstract Point getCenter();
+    // Получение периметра фигуры
+    abstract double getPerimeter();
+    // Получение площади фигуры
+    abstract double getArea();
+    // Перемещение фигуры в новую точку
+    abstract void move(Point newCenter);
+    // Поворот фигуры на заданный угол
+    abstract void rotate(double angle);
+    // Масштабирование фигуры с заданным коэффициентом
+    abstract void scale(double factor);
+}
+
+// Класс точки на плоскости
+class Point {
+    double x, y;
+
+    Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+// Класс Ellipse
+class Ellipse extends Shape {
+    private Point focus1, focus2;
+    private double perifocalDistance;
+    private double rotationAngle;
+
+  
+    public Ellipse(Point focus1, Point focus2, double perifocalDistance) {
+        this.focus1 = focus1;
+        this.focus2 = focus2;
+        this.perifocalDistance = perifocalDistance;
+        this.rotationAngle = 0;
+    }
+
+    // Получение фокусов 
+    public Point[] getFoci() {
+        return new Point[] { focus1, focus2 };
+    }
+
+    // Расчет расстояния от фокуса до центра эллипса
+    public double getDistanceFromFocusToCenter() {
+        return getDistanceBetweenPoints(focus1, getCenter()) / 2;
+    }
+
+    // Расчет большой полуоси
+    public double getMajorAxis() {
+        double distanceBetweenFoci = getDistanceBetweenPoints(focus1, focus2);
+        return (distanceBetweenFoci + 2 * perifocalDistance) / 2;
+    }
+
+    // Расчет малой полуоси
+    public double getMinorAxis() {
+        double majorAxis = getMajorAxis();
+        double distanceBetweenFoci = getDistanceBetweenPoints(focus1, focus2);
+        return Math.sqrt(Math.pow(majorAxis, 2) - Math.pow(distanceBetweenFoci / 2, 2));
+    }
+
+    // Расчет эксцентриситета
+    public double getEccentricity() {
+        double distanceBetweenFoci = getDistanceBetweenPoints(focus1, focus2);
+        double majorAxis = getMajorAxis();
+        return distanceBetweenFoci / (2 * majorAxis);
+    }
+
+   
+    @Override
+    public Point getCenter() {
+        return new Point((focus1.x + focus2.x) / 2, (focus1.y + focus2.y) / 2);
+    }
+
+    @Override
+    public double getPerimeter() {
+        double a = getMajorAxis();
+        double b = getMinorAxis();
+        return Math.PI * (3 * (a + b) - Math.sqrt((3 * a + b) * (a + 3 * b)));
+    }
+
+    @Override
+    public double getArea() {
+        return Math.PI * getMajorAxis() * getMinorAxis();
+    }
+
+    @Override
+    public void move(Point newCenter) {
+        Point currentCenter = getCenter();
+        double dx = newCenter.x - currentCenter.x;
+        double dy = newCenter.y - currentCenter.y;
+
+        focus1.x += dx;
+        focus1.y += dy;
+        focus2.x += dx;
+        focus2.y += dy;
+    }
+
+    @Override
+    public void rotate(double angle) {
+        rotationAngle += angle;
+    }
+
+    @Override
+    public void scale(double factor) {
+        perifocalDistance *= factor;
+    }
+
+    // Вспомогательный метод для вычисления расстояния между двумя точками
+    private double getDistanceBetweenPoints(Point p1, Point p2) {
+        return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+    }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+       
+        Point focus1 = new Point(1, 1);
+        Point focus2 = new Point(5, 1);
+        double perifocalDistance = 3;     
+        Ellipse ellipse = new Ellipse(focus1, focus2, perifocalDistance);
+        System.out.println("Центр эллипса: (" + ellipse.getCenter().x + ", " + ellipse.getCenter().y + ")");
+        System.out.println("Периметр эллипса: " + ellipse.getPerimeter());
+        System.out.println("Площадь эллипса: " + ellipse.getArea());
+        System.out.println("Фокусы эллипса: (" + ellipse.getFoci()[0].x + ", " + ellipse.getFoci()[0].y + "), ("
+                + ellipse.getFoci()[1].x + ", " + ellipse.getFoci()[1].y + ")");
+        System.out.println("Расстояние от фокуса до центра: " + ellipse.getDistanceFromFocusToCenter());
+        System.out.println("Большая полуось: " + ellipse.getMajorAxis());
+        System.out.println("Малая полуось: " + ellipse.getMinorAxis());
+        System.out.println("Эксцентриситет: " + ellipse.getEccentricity());
+    }
+}
