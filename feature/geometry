@@ -159,10 +159,104 @@ class Circle extends Shape {
     }
 }
 
+// Класс Rectangle
+class Rectangle extends Shape {
+    private Point upperLeft;
+    private Point lowerRight;
+    private double height;
+    private Point center;
+
+    Rectangle(Point upperLeft, Point lowerRight, double height) {
+        this.upperLeft = upperLeft;
+        this.lowerRight = lowerRight;
+        this.height = height;
+        this.center = new Point(
+            (upperLeft.x + lowerRight.x) / 2,
+            (upperLeft.y + lowerRight.y) / 2
+        );
+    }
+
+    @Override
+    Point getCenter() {
+        return this.center;
+    }
+
+    @Override
+    double getPerimeter() {
+        return 2 * (getWidth() + this.height);
+    }
+
+    @Override
+    double getArea() {
+        return getWidth() * this.height;
+    }
+
+    @Override
+    void move(Point newCenter) {
+        double deltaX = newCenter.x - this.center.x;
+        double deltaY = newCenter.y - this.center.y;
+
+        this.upperLeft.x += deltaX;
+        this.upperLeft.y += deltaY;
+        this.lowerRight.x += deltaX;
+        this.lowerRight.y += deltaY;
+        this.center = newCenter;
+    }
+
+    @Override
+    void rotate(double angle) {
+      // Угол в радианах
+        double radians = Math.toRadians(angle);
+
+        // Вращение верхнего левого угла
+        double newXUpperLeft = this.center.x + (this.upperLeft.x - this.center.x) * Math.cos(radians) -
+                (this.upperLeft.y - this.center.y) * Math.sin(radians);
+        double newYUpperLeft = this.center.y + (this.upperLeft.x - this.center.x) * Math.sin(radians) +
+                (this.upperLeft.y - this.center.y) * Math.cos(radians);
+
+        // Вращение нижнего правого угла
+        double newXLowerRight = this.center.x + (this.lowerRight.x - this.center.x) * Math.cos(radians) -
+                (this.lowerRight.y - this.center.y) * Math.sin(radians);
+        double newYLowerRight = this.center.y + (this.lowerRight.x - this.center.x) * Math.sin(radians) +
+                (this.lowerRight.y - this.center.y) * Math.cos(radians);
+
+        // Обновление координат углов
+        this.upperLeft = new Point((int) newXUpperLeft, (int) newYUpperLeft);
+        this.lowerRight = new Point((int) newXLowerRight, (int) newYLowerRight);
+    }
+
+    // Масштабирование
+    @Override
+    void scale(double factor) {
+        this.height *= factor;
+        double width = getWidth() * factor;
+        this.lowerRight.x = this.upperLeft.x + width;
+        this.lowerRight.y = this.upperLeft.y - height;
+        this.center = new Point(
+            (upperLeft.x + lowerRight.x) / 2,
+            (upperLeft.y + lowerRight.y) / 2
+        );
+    }
+
+    // Метод для получения ширины прямоугольника
+    double getWidth() {
+        return this.lowerRight.x - this.upperLeft.x;
+    }
+
+    // Метод для получения высоты прямоугольника
+    double getHeight() {
+        return this.height;
+    }
+
+    // Метод для получения диагонали прямоугольника
+    double getDiagonal() {
+        return Math.sqrt(Math.pow(getWidth(), 2) + Math.pow(this.height, 2));
+    }
+}
 
 public class Main {
     public static void main(String[] args) {
-       
+       // Эллипс
         Point focus1 = new Point(1, 1);
         Point focus2 = new Point(5, 1);
         double perifocalDistance = 3;     
@@ -177,6 +271,7 @@ public class Main {
         System.out.println("Малая полуось: " + ellipse.getMinorAxis());
         System.out.println("Эксцентриситет: " + ellipse.getEccentricity());
    
+        // Окружность
         Point center = new Point(3, 3);
         double radius = 2;
         Circle circle = new Circle(center, radius);
@@ -184,5 +279,23 @@ public class Main {
         System.out.println("Радиус окружности: " + circle.getRadius());
         System.out.println("Периметр окружности: " + circle.getPerimeter());
         System.out.println("Площадь окружности: " + circle.getArea());
+    
+        // Прямоугольник
+        Point upperLeft = new Point(0, 10);
+        Point lowerRight = new Point(10, 0);
+        double height = 10;
+        Rectangle rectangle = new Rectangle(upperLeft, lowerRight, height);
+        Point center = rectangle.getCenter();
+        System.out.println("Центр прямоугольника: (" + center.x + ", " + center.y + ")");
+        double perimeter = rectangle.getPerimeter();
+        System.out.println("Периметр прямоугольника  " + perimeter);
+        double area = rectangle.getArea();
+        System.out.println("Площадь прямоугольника: " + area);
+        double width = rectangle.getWidth();
+        System.out.println("Ширина прямоугольника: " + width);
+        double rectHeight = rectangle.getHeight();
+        System.out.println("Высота прямоугольника: " + rectHeight);
+        double diagonal = rectangle.getDiagonal();
+        System.out.println("Диагональ прямоугольника: " + diagonal);;
     }
 }
