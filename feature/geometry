@@ -114,6 +114,51 @@ class Ellipse extends Shape {
     }
 }
 
+// Класс Circle
+class Circle extends Shape {
+    private Point center;
+    private double radius;
+
+    public Circle(Point center, double radius) {
+        this.center = center;
+        this.radius = radius;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    @Override
+    public Point getCenter() {
+        return center;
+    }
+
+    @Override
+    public double getPerimeter() {
+        return 2 * Math.PI * radius;
+    }
+
+    @Override
+    public double getArea() {
+        return Math.PI * radius * radius;
+    }
+
+    @Override
+    public void move(Point newCenter) {
+        this.center = newCenter;
+    }
+
+    @Override
+    public void rotate(double angle) {
+        // Вращение не влияет на окружноть, поэтому оставляем метод пустым
+    }
+
+    @Override
+    public void scale(double factor) {
+        this.radius *= factor;
+    }
+}
+
 
 public class Main {
     public static void main(String[] args) {
@@ -131,5 +176,13 @@ public class Main {
         System.out.println("Большая полуось: " + ellipse.getMajorAxis());
         System.out.println("Малая полуось: " + ellipse.getMinorAxis());
         System.out.println("Эксцентриситет: " + ellipse.getEccentricity());
+   
+        Point center = new Point(3, 3);
+        double radius = 2;
+        Circle circle = new Circle(center, radius);
+        System.out.println("Центр окружности: (" + circle.getCenter().x + ", " + circle.getCenter().y + ")");
+        System.out.println("Радиус окружности: " + circle.getRadius());
+        System.out.println("Периметр окружности: " + circle.getPerimeter());
+        System.out.println("Площадь окружности: " + circle.getArea());
     }
 }
